@@ -1,0 +1,79 @@
+name: Validate and publish catalogue
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: catalogue-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Find baseline
+        id: baseline
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          FORCED: ${{ github.event.forced }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            echo "has_previous=false" >> "$GITHUB_OUTPUT"
+          else
+            if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+              if [[ "$FORCED" == true && "$(git rev-list --count HEAD)" == 1 ]]; then
+                echo "has_previous=false" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              echo "Baseline commit is unavailable" >&2
+              exit 1
+            fi
+            if git cat-file -e "$BASE_SHA:catalogue/source.json" 2>/dev/null; then
+              git show "$BASE_SHA:catalogue/source.json" > "$RUNNER_TEMP/previous-source.json"
+              echo "has_previous=true" >> "$GITHUB_OUTPUT"
+            elif [[ -n "$(git log -1 --format=%H "$BASE_SHA" -- catalogue/source.json)" ]]; then
+              echo "Catalogue history exists but baseline source is missing" >&2
+              exit 1
+            else
+              echo "has_previous=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+      - name: Test and build
+        shell: bash
+        env:
+          TINGE_SITE_OUTPUT: ${{ runner.temp }}/site
+          HAS_PREVIOUS: ${{ steps.baseline.outputs.has_previous }}
+        run: |
+          set -euo pipefail
+          if [[ "$HAS_PREVIOUS" == true ]]; then
+            tools/validate.sh --previous "$RUNNER_TEMP/previous-source.json"
+          else
+            tools/validate.sh
+          fi
+      - name: Upload public Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PAGES_PUBLICATION_ENABLED == 'true'
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
+        with:
+          path: ${{ runner.temp }}/site
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PAGES_PUBLICATION_ENABLED == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy validated artifact
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
