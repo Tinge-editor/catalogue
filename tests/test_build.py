@@ -306,6 +306,23 @@ class CatalogueTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'invalid advanced field'):
                 verify_manifest(self.manifest_with(look(11, clarity=value)))
 
+    def test_verify_manifest_checks_calibration(self):
+        def look(engine, **fields):
+            def mutate(p):
+                p['schemaVersion'] = p['engineVersion'] = engine
+                p['baseStrength'] = 1
+                p['advanced'] = {'red': 1, 'green': 1, 'blue': 1, 'curve': [0, 0.25, 0.5, 0.75, 1], **fields}
+            return mutate
+        neutral = {'hue': 0, 'saturation': 0}
+        primaries = [{'hue': 0.2, 'saturation': 0}, neutral, {'hue': -0.35, 'saturation': 0.4}]
+        verify_manifest(self.manifest_with(look(11, calibration=primaries)))
+        with self.assertRaisesRegex(ValueError, 'needs engine 11'):
+            verify_manifest(self.manifest_with(look(10, calibration=primaries)))
+        for value in ([neutral, neutral], [neutral, neutral, {'hue': 1.2, 'saturation': 0}],
+                      [neutral, neutral, {'hue': 0}], [neutral, neutral, {'hue': 0, 'saturation': 0, 'luminance': 0}], [0, 0, 0]):
+            with self.assertRaisesRegex(ValueError, 'invalid advanced field'):
+                verify_manifest(self.manifest_with(look(11, calibration=value)))
+
     def test_first_party_release_rejects_empty_or_reserved_listings(self):
         for mutation in ('empty', 'reserved', 'wrong_catalogue'):
             original = json.loads(json.dumps(self.value))
