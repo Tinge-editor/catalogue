@@ -163,7 +163,7 @@
       "price": "free",
       "redistributionApproved": true,
       "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
-      "listed": true
+      "listed": false
     },
     {
       "id": "edinburgh-soft",
@@ -182,7 +182,7 @@
       "price": "free",
       "redistributionApproved": true,
       "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
-      "listed": true
+      "listed": false
     },
     {
       "id": "overcast",
@@ -200,7 +200,7 @@
       "price": "free",
       "redistributionApproved": true,
       "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
-      "listed": true
+      "listed": false
     },
     {
       "id": "fjord",
@@ -218,7 +218,7 @@
       "price": "free",
       "redistributionApproved": true,
       "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
-      "listed": true
+      "listed": false
     },
     {
       "id": "harvest",
@@ -236,7 +236,7 @@
       "price": "free",
       "redistributionApproved": true,
       "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
-      "listed": true
+      "listed": false
     },
     {
       "id": "linen-warm",
@@ -254,7 +254,7 @@
       "price": "free",
       "redistributionApproved": true,
       "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
-      "listed": true
+      "listed": false
     },
     {
       "id": "pewter",
@@ -272,7 +272,7 @@
       "price": "free",
       "redistributionApproved": true,
       "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
-      "listed": true
+      "listed": false
     },
     {
       "id": "graphite",
@@ -286,6 +286,159 @@
       ],
       "packagePath": "presets/graphite-2.0.0.json",
       "sha256": "61ccb07d0c256f0e91ea50301c2255f071c59aae2bb340c3534f5bf5cc71b755",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": false
+    },
+    {
+      "id": "daylight",
+      "version": "2.1.0",
+      "name": "Daylight",
+      "description": "Clear, neutral everyday colour: livelier saturation, brighter midtones and restrained highlights.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Natural"
+      ],
+      "collection": "Everyday colour",
+      "packagePath": "presets/daylight-2.1.0.json",
+      "sha256": "ae8f5c4aca8792054bbe822292d600fc1ad39ec50e7d2356e063294f84ae1eb8",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": true
+    },
+    {
+      "id": "edinburgh-soft",
+      "version": "1.3.0",
+      "name": "Edinburgh Soft",
+      "description": "Bright, warm-neutral everyday colour with gentle contrast and softened highlights.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Natural",
+        "Subtle"
+      ],
+      "collection": "Everyday colour",
+      "packagePath": "presets/edinburgh-soft-1.3.0.json",
+      "sha256": "d444e292117942b3a879c14042868542310e3a00a80e9b80317beed8d3f6e6ae",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": true
+    },
+    {
+      "id": "overcast",
+      "version": "2.1.0",
+      "name": "Overcast",
+      "description": "Lifted midtones and rich, slightly cool colour that brightens grey, cloudy days.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Natural"
+      ],
+      "collection": "Everyday colour",
+      "packagePath": "presets/overcast-2.1.0.json",
+      "sha256": "99024ae9871efa8cbc5894559549a34a7bfa1985d183a293fd39a56722dd7e8b",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": true
+    },
+    {
+      "id": "fjord",
+      "version": "2.1.0",
+      "name": "Fjord",
+      "description": "Cool, faded pastel colour: lifted blue-grey blacks, softened whites and quiet saturation.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Creative"
+      ],
+      "collection": "Film colour",
+      "packagePath": "presets/fjord-2.1.0.json",
+      "sha256": "ad0e3470b3676797ec5f39e7a92ec05be55688fdd3e73d1fdf861b594def0616",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": true
+    },
+    {
+      "id": "harvest",
+      "version": "2.1.0",
+      "name": "Harvest",
+      "description": "Strong golden warmth: amber highlights with calmer oranges and yellows that keep skin natural.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Film"
+      ],
+      "collection": "Film colour",
+      "packagePath": "presets/harvest-2.1.0.json",
+      "sha256": "3db22429098860eb44ac9ebf1fd7a22ce2b06e90c3b8da064adb1318c617db39",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": true
+    },
+    {
+      "id": "linen-warm",
+      "version": "2.1.0",
+      "name": "Linen Warm",
+      "description": "Soft, warm portrait colour: gentle saturation, smooth skin tones and softened highlights.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Film"
+      ],
+      "collection": "Film colour",
+      "packagePath": "presets/linen-warm-2.1.0.json",
+      "sha256": "71b37b5454bcdf6d40b74e44052ea9fa89c321cb0e2497a93d0d7a86afcdb7dd",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": true
+    },
+    {
+      "id": "pewter",
+      "version": "2.1.0",
+      "name": "Pewter",
+      "description": "Muted, slightly cool colour with restrained saturation, cool shadows and clean tones.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Film"
+      ],
+      "collection": "Film colour",
+      "packagePath": "presets/pewter-2.1.0.json",
+      "sha256": "e767e735ffb593c61153518e6ae3fec27fe98f5b7c1445c07c78267f4a401aca",
+      "status": "approved",
+      "price": "free",
+      "redistributionApproved": true,
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
+      "listed": true
+    },
+    {
+      "id": "graphite",
+      "version": "2.1.0",
+      "name": "Graphite",
+      "description": "Clean, grain-free black and white with gentle tonal contrast, open shadows and luminous skin.",
+      "author": "Tinge",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
+      "categories": [
+        "Creative"
+      ],
+      "collection": "Black and white",
+      "packagePath": "presets/graphite-2.1.0.json",
+      "sha256": "78e293fd5b6ed7665c4fb50bf03d790174158bd53a2856cb0772bc0f19a3ff14",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,

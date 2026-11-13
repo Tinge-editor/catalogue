@@ -1,0 +1,91 @@
+[
+  {
+    "id": "graphite",
+    "name": "Graphite",
+    "description": "Clean, grain-free black and white with gentle tonal contrast, open shadows and luminous skin.",
+    "schemaVersion": 11,
+    "engineVersion": 11,
+    "adjustments": {
+      "exposure": 0,
+      "contrast": 1,
+      "saturation": 1,
+      "temperature": 0,
+      "tint": 0
+    },
+    "baseStrength": 1,
+    "advanced": {
+      "red": 1,
+      "green": 1,
+      "blue": 1,
+      "curve": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ],
+      "monochrome": [
+        0.1,
+        0.15,
+        0.1,
+        0.0,
+        -0.05,
+        -0.1,
+        0.0,
+        0.05
+      ],
+      "filmShoulder": 0.2
+    },
+    "macros": [
+      {
+        "name": "Character",
+        "low": {
+          "contrast": 0.97,
+          "advanced.blacks": 0.0
+        },
+        "high": {
+          "contrast": 1.09,
+          "advanced.blacks": -0.12
+        }
+      }
+    ],
+    "base": [
+      {
+        "id": "graphite",
+        "name": "Graphite",
+        "description": "Clean, grain-free black and white with gentle tonal contrast and open shadows.",
+        "schemaVersion": 2,
+        "engineVersion": 2,
+        "adjustments": {
+          "exposure": 0.1,
+          "contrast": 1.0,
+          "saturation": 1,
+          "temperature": 0,
+          "tint": 0
+        },
+        "toneCurve": [
+          [
+            0,
+            0.005
+          ],
+          [
+            0.25,
+            0.235
+          ],
+          [
+            0.5,
+            0.52
+          ],
+          [
+            0.75,
+            0.79
+          ],
+          [
+            1,
+            0.98
+          ]
+        ]
+      }
+    ]
+  }
+]
