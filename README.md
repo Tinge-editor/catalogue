@@ -16,6 +16,8 @@ The command runs tests and builds a site in a temporary directory. To retain out
 TINGE_SITE_OUTPUT=/tmp/tinge-site tools/validate.sh
 ```
 
+The build also publishes the standalone policy at `https://tinge-editor.github.io/catalogue/privacy.html` from `public/privacy.html`. Review the policy against the app release and current data practices before publishing.
+
 The generated `catalogue.json` uses Tinge's v1 manifest format and embeds each package. Approved packages are also available under `assets/<id>/<version>/<sha256>.json`. The current app uses the embedded bytes. `tools/verify_manifest.py` performs portable structural and integrity checks, including basic package versions and LUT structure. **It does not implement the full iOS preset validator and cannot alone prove compatibility.**
 
 Before approving a release, independently validate the generated manifest against a reviewed iOS app checkout on macOS with Xcode command-line tools:

@@ -52,6 +52,8 @@ class CatalogueTest(unittest.TestCase):
         asset = f'assets/look/1/{self.row["sha256"]}.json'
         self.assertEqual((a / asset).read_bytes(), (b / asset).read_bytes())
         self.assertNotIn('rightsEvidence', row)
+        self.assertEqual((a / 'privacy.html').read_bytes(), (Path(__file__).resolve().parents[1] / 'public' / 'privacy.html').read_bytes())
+        self.assertEqual((a / 'privacy.html').read_bytes(), (b / 'privacy.html').read_bytes())
 
     def test_missing_metadata_duplicate_and_missing_file(self):
         del self.row['author']

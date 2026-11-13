@@ -133,6 +133,9 @@ def build(source_path, output, validator, previous_path=None):
     temporary = Path(tempfile.mkdtemp(prefix='.catalogue-', dir=output.parent))
     try:
         (temporary / 'catalogue.json').write_bytes(encoded)
+        # Publish only explicitly allowlisted, reviewed static pages.
+        page = Path(__file__).resolve().parents[1] / 'public' / 'privacy.html'
+        (temporary / 'privacy.html').write_bytes(page.read_bytes())
         for relative, data in assets:
             target = temporary / relative
             target.parent.mkdir(parents=True, exist_ok=True)
