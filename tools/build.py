@@ -78,7 +78,36 @@ def check_history(source, previous):
             raise ValueError(f'published version {key(old)} changed or removed; retain it and create a new version')
 
 
-def build(source_path, output, validator, previous_path=None, require_production=False):
+REPO = Path(__file__).resolve().parents[1]
+# Experimental listing published beside, never inside, the production catalogue.
+RESEARCH_SOURCE = REPO / 'experimental' / 'research-presets' / 'catalogue.json'
+RESEARCH_OUTPUT = 'research-catalogue.json'
+MANIFEST_FIELDS = {'formatVersion', 'catalogID', 'title', 'isDemo', 'looks'}
+
+
+def load_research(path, production):
+    """Return the experimental manifest bytes after structural checks; the validator runs later."""
+    if path.stat().st_size > MAX_BYTES:
+        raise ValueError('research catalogue exceeds 8 MB')
+    data = path.read_bytes()
+    manifest = read_json(path)
+    if not isinstance(manifest, dict) or set(manifest) != MANIFEST_FIELDS or manifest['formatVersion'] != 1 or manifest['isDemo'] is not False or not isinstance(manifest['looks'], list):
+        raise ValueError('invalid research catalogue header')
+    catalog_id = manifest['catalogID']
+    if not isinstance(catalog_id, str) or not ID.fullmatch(catalog_id) or len(catalog_id.encode()) > 32:
+        raise ValueError('invalid research catalogue ID')
+    if catalog_id in {'tinge', production['catalogID']} or manifest['title'] == production['title']:
+        raise ValueError('research catalogue must not reuse the production catalogue identity')
+    production_ids = {row['id'] for row in production['versions']}
+    for look in manifest['looks']:
+        if not isinstance(look, dict) or not isinstance(look.get('id'), str):
+            raise ValueError('invalid research look')
+        if look['id'] in production_ids or look['id'] == 'original' or look['id'].startswith('personal-'):
+            raise ValueError(f'research look ID collides with a production or reserved ID: {look["id"]}')
+    return data
+
+
+def build(source_path, output, validator, previous_path=None, require_production=False, research_path=None):
     source_path = source_path.resolve()
     root = source_path.parent
     source = load_source(source_path)
@@ -142,6 +171,7 @@ def build(source_path, output, validator, previous_path=None, require_production
     encoded = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
     if len(encoded) > MAX_BYTES:
         raise ValueError('catalogue exceeds 8 MB')
+    research = load_research(research_path, source) if research_path else None
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = Path(tempfile.mkdtemp(prefix='.catalogue-', dir=output.parent))
     try:
@@ -163,6 +193,10 @@ def build(source_path, output, validator, previous_path=None, require_production
             subprocess.run([str(validator), str(check)], check=True)
             check.unlink()
         subprocess.run([str(validator), str(temporary / 'catalogue.json')], check=True)
+        if research is not None:
+            # Copied byte for byte so the Pages URL serves exactly the reviewed file.
+            (temporary / RESEARCH_OUTPUT).write_bytes(research)
+            subprocess.run([str(validator), str(temporary / RESEARCH_OUTPUT)], check=True)
         os.rename(temporary, output)
     finally:
         if temporary.exists():
@@ -177,7 +211,8 @@ def main():
     parser.add_argument('--previous', type=Path)
     args = parser.parse_args()
     try:
-        build(args.source, args.output, args.validator.resolve(), args.previous, require_production=True)
+        research = RESEARCH_SOURCE if RESEARCH_SOURCE.is_file() else None
+        build(args.source, args.output, args.validator.resolve(), args.previous, require_production=True, research_path=research)
     except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError) as error:
         parser.exit(1, f'Catalogue build failed: {error}\n')
     print(f'Built {args.output}')

@@ -10,7 +10,7 @@ import struct
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
-from build import build, source_digest
+from build import RESEARCH_OUTPUT, RESEARCH_SOURCE, build, source_digest
 from verify_manifest import main as verify_manifest
 
 VALIDATOR = Path(os.environ['TINGE_VALIDATOR']).resolve()
@@ -184,6 +184,52 @@ class CatalogueTest(unittest.TestCase):
                 build(self.source, self.root / ('production-' + mutation), VALIDATOR, require_production=True)
             self.value = original
             self.row = self.value['versions'][0]
+
+    def research(self, mutate=None):
+        manifest = json.loads((self.build() / 'catalogue.json').read_text())
+        manifest['catalogID'], manifest['title'] = 'tinge-research', 'Research looks'
+        manifest['looks'][0] = dict(manifest['looks'][0], id='research-look', name='Research Look')
+        if mutate: mutate(manifest)
+        path = self.root / f'research-{self.counter}.json'
+        path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+        return path
+
+    def build_with_research(self, path):
+        self.counter += 1
+        self.write()
+        output = self.root / f'output-{self.counter}'
+        build(self.source, output, VALIDATOR, research_path=path, require_production=True)
+        return output
+
+    def test_research_catalogue_is_copied_beside_unchanged_production(self):
+        plain = self.build()
+        path = self.research()
+        out = self.build_with_research(path)
+        self.assertEqual((out / RESEARCH_OUTPUT).read_bytes(), path.read_bytes())
+        self.assertEqual((out / 'catalogue.json').read_bytes(), (plain / 'catalogue.json').read_bytes())
+        self.assertFalse((plain / RESEARCH_OUTPUT).exists())
+        self.assertEqual(json.loads((out / 'catalogue.json').read_text())['catalogID'], 'tinge')
+
+    def test_research_catalogue_identity_and_content_are_checked(self):
+        def look(**changes): return lambda m: m['looks'][0].update(changes)
+        cases = {
+            'reuse the production': lambda m: m.update(catalogID='tinge'),
+            'reuse the production ': lambda m: m.update(title='Tinge catalogue'),
+            'header': lambda m: m.update(isDemo=True),
+            'collides': look(id='look'),
+            'reserved': look(id='personal-1'),
+        }
+        for message, mutate in cases.items():
+            with self.assertRaisesRegex(ValueError, message.strip()):
+                self.build_with_research(self.research(mutate))
+        with self.assertRaises(Exception):
+            self.build_with_research(self.research(look(sha256='0' * 64)))
+        self.assertFalse((self.root / f'output-{self.counter}').exists())
+
+    def test_repository_research_catalogue_passes_validator(self):
+        if not RESEARCH_SOURCE.is_file():
+            self.skipTest('no experimental research catalogue in this checkout')
+        verify_manifest(RESEARCH_SOURCE)
 
     def test_mutating_old_version_and_path_escape_are_rejected(self):
         old = self.previous()
