@@ -226,6 +226,20 @@ class CatalogueTest(unittest.TestCase):
             self.build_with_research(self.research(look(sha256='0' * 64)))
         self.assertFalse((self.root / f'output-{self.counter}').exists())
 
+    def test_research_catalogue_cannot_reuse_retired_production_id(self):
+        # A renamed production look keeps its old ID as an unlisted, retained version.
+        self.value['versions'].append(dict(self.row, id='old-look', listed=False))
+        retired = self.research(lambda m: m['looks'][0].update(id='old-look'))
+        with self.assertRaisesRegex(ValueError, 'collides'):
+            self.build_with_research(retired)
+
+    def test_repository_catalogues_do_not_share_look_ids(self):
+        if not RESEARCH_SOURCE.is_file():
+            self.skipTest('no experimental research catalogue in this checkout')
+        production = json.loads((RESEARCH_SOURCE.parents[2] / 'catalogue' / 'source.json').read_text())
+        research = json.loads(RESEARCH_SOURCE.read_text())
+        self.assertFalse({r['id'] for r in production['versions']} & {l['id'] for l in research['looks']})
+
     def test_repository_research_catalogue_passes_validator(self):
         if not RESEARCH_SOURCE.is_file():
             self.skipTest('no experimental research catalogue in this checkout')

@@ -1,0 +1,43 @@
+[
+  {
+    "id": "overcast",
+    "name": "Overcast",
+    "description": "Lifted midtones and rich, slightly cool colour that brightens grey, cloudy days.",
+    "schemaVersion": 2,
+    "engineVersion": 2,
+    "adjustments": {
+      "exposure": 0.38,
+      "contrast": 1.0,
+      "saturation": 1.38,
+      "temperature": 350,
+      "tint": 1
+    },
+    "channelGains": [
+      1.04,
+      1.03,
+      0.99
+    ],
+    "toneCurve": [
+      [
+        0,
+        0.01
+      ],
+      [
+        0.25,
+        0.28
+      ],
+      [
+        0.5,
+        0.58
+      ],
+      [
+        0.75,
+        0.82
+      ],
+      [
+        1,
+        0.98
+      ]
+    ]
+  }
+]

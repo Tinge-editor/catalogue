@@ -1,0 +1,43 @@
+[
+  {
+    "id": "edinburgh-soft",
+    "name": "Edinburgh Soft",
+    "description": "Bright, warm-neutral everyday colour with gentle contrast and softened highlights.",
+    "schemaVersion": 2,
+    "engineVersion": 2,
+    "adjustments": {
+      "exposure": 0.22,
+      "contrast": 1.0,
+      "saturation": 1.03,
+      "temperature": -900,
+      "tint": 2
+    },
+    "channelGains": [
+      1.04,
+      1.015,
+      0.9
+    ],
+    "toneCurve": [
+      [
+        0,
+        0.012
+      ],
+      [
+        0.25,
+        0.32
+      ],
+      [
+        0.5,
+        0.57
+      ],
+      [
+        0.75,
+        0.79
+      ],
+      [
+        1,
+        0.97
+      ]
+    ]
+  }
+]
