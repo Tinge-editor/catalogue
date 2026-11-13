@@ -25,6 +25,13 @@ def curve(points):
             and all(a <= b for a, b in zip(points, points[1:])))
 
 
+def point_curve(points):
+    """2–16 [x, y] points in 0…1, x strictly increasing and y non-decreasing (engine 11)."""
+    return (isinstance(points, list) and 2 <= len(points) <= 16
+            and all(isinstance(p, list) and len(p) == 2 and number(p[0], 0, 1) and number(p[1], 0, 1) for p in points)
+            and all(a[0] < b[0] and a[1] <= b[1] for a, b in zip(points, points[1:])))
+
+
 def tones(entries, count):
     return (isinstance(entries, list) and len(entries) == count and all(
         isinstance(e, dict) and set(e) == {'hue', 'saturation', 'luminance'} for e in entries))
@@ -62,6 +69,8 @@ ADVANCED_FIELDS = {
     'bloom': (11, lambda v: number(v, 0, 1)),
     'bloomThreshold': (11, lambda v: number(v, 0, 1)),
     'grainColor': (11, lambda v: number(v, 0, 1)),
+    'curvePoints': (11, point_curve),
+    'channelCurvePoints': (11, lambda v: isinstance(v, list) and len(v) == 3 and all(point_curve(c) for c in v)),
 }
 
 
@@ -75,6 +84,11 @@ def check_advanced(advanced, engine):
             continue
         require(engine >= first, f'advanced field {field} needs engine {first}')
         require(check(value), f'invalid advanced field {field}')
+    # Point curves replace the five-value curves, which must then be neutral or absent, as in the app.
+    if advanced.get('curvePoints') is not None:
+        require(advanced['curve'] == [0, 0.25, 0.5, 0.75, 1], 'curvePoints needs a neutral curve')
+    if advanced.get('channelCurvePoints') is not None:
+        require(advanced.get('channelCurves') is None, 'channelCurvePoints replaces channelCurves')
 
 
 def require(condition, message):
