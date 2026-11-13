@@ -173,6 +173,46 @@ class CatalogueTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'invalid catalogue header'):
             verify_manifest(path)
 
+    def manifest_with(self, mutate):
+        manifest = json.loads((self.build() / 'catalogue.json').read_text())
+        package = json.loads(base64.b64decode(manifest['looks'][0]['package']))
+        mutate(package[0])
+        data = json.dumps(package).encode()
+        manifest['looks'][0].update(package=base64.b64encode(data).decode(), sha256=hashlib.sha256(data).hexdigest())
+        path = self.root / f'manifest-{self.counter}.json'
+        path.write_text(json.dumps(manifest))
+        return path
+
+    def test_verify_manifest_accepts_engine_11_and_checks_advanced_fields(self):
+        def engine(version):
+            def mutate(p):
+                p['schemaVersion'] = p['engineVersion'] = version
+                p['baseStrength'] = 1
+                p['advanced'] = {'red': 1, 'green': 1, 'blue': 1, 'curve': [0, 0.25, 0.5, 0.75, 1], 'highlights': 0.2}
+            return mutate
+        verify_manifest(self.manifest_with(engine(11)))
+        with self.assertRaisesRegex(ValueError, 'unsupported schema or engine'):
+            verify_manifest(self.manifest_with(engine(12)))
+        cases = {
+            'unsupported advanced field': lambda a: a.update(futureDial=1),
+            'invalid advanced field highlights': lambda a: a.update(highlights=2),
+            'invalid advanced field curve': lambda a: a.update(curve=[0, 0.5, 0.4, 0.75, 1]),
+            'invalid advanced field colorMix': lambda a: a.update(colorMix=[{'hue': 0, 'saturation': 0, 'luminance': 0}] * 7),
+            'invalid advanced field colorGrading': lambda a: a.update(colorGrading={'tones': [], 'blending': 0.5, 'balance': 0}),
+            'need red, green, blue and curve': lambda a: a.pop('red'),
+        }
+        for message, change in cases.items():
+            def mutate(p, change=change):
+                engine(11)(p)
+                change(p['advanced'])
+            with self.assertRaisesRegex(ValueError, message):
+                verify_manifest(self.manifest_with(mutate))
+        def too_early(p):
+            engine(6)(p)
+            p['advanced']['whites'] = 0.1
+        with self.assertRaisesRegex(ValueError, 'needs engine 7'):
+            verify_manifest(self.manifest_with(too_early))
+
     def test_first_party_release_rejects_empty_or_reserved_listings(self):
         for mutation in ('empty', 'reserved', 'wrong_catalogue'):
             original = json.loads(json.dumps(self.value))
