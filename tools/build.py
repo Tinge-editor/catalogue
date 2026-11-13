@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the public v1 catalogue from approved free native packages."""
+"""Build the public catalogue from approved free native packages (format 1, or 2 when a look has a collection or sample)."""
 import argparse
 import base64
 import hashlib
@@ -83,6 +83,9 @@ REPO = Path(__file__).resolve().parents[1]
 RESEARCH_SOURCE = REPO / 'experimental' / 'research-presets' / 'catalogue.json'
 RESEARCH_OUTPUT = 'research-catalogue.json'
 MANIFEST_FIELDS = {'formatVersion', 'catalogID', 'title', 'isDemo', 'looks'}
+# Optional presentation fields; any of them makes the manifest format 2.
+PRESENTATION_FIELDS = {'collection', 'samplePath', 'sampleCredit'}
+SAMPLE_MAX_BYTES = 300_000
 
 
 def load_research(path, production):
@@ -91,7 +94,7 @@ def load_research(path, production):
         raise ValueError('research catalogue exceeds 8 MB')
     data = path.read_bytes()
     manifest = read_json(path)
-    if not isinstance(manifest, dict) or set(manifest) != MANIFEST_FIELDS or manifest['formatVersion'] != 1 or manifest['isDemo'] is not False or not isinstance(manifest['looks'], list):
+    if not isinstance(manifest, dict) or set(manifest) != MANIFEST_FIELDS or manifest['formatVersion'] not in (1, 2) or manifest['isDemo'] is not False or not isinstance(manifest['looks'], list):
         raise ValueError('invalid research catalogue header')
     catalog_id = manifest['catalogID']
     if not isinstance(catalog_id, str) or not ID.fullmatch(catalog_id) or len(catalog_id.encode()) > 32:
@@ -119,7 +122,7 @@ def build(source_path, output, validator, previous_path=None, require_production
     for row in source['versions']:
         if row['status'] != 'approved' or row['price'] != 'free':
             continue
-        if not FIELDS.issubset(row) or set(row) - FIELDS - {'lutEncoding'} or row['redistributionApproved'] is not True or not isinstance(row['rightsEvidence'], str) or not row['rightsEvidence'].strip() or not isinstance(row['listed'], bool):
+        if not FIELDS.issubset(row) or set(row) - FIELDS - {'lutEncoding'} - PRESENTATION_FIELDS or row['redistributionApproved'] is not True or not isinstance(row['rightsEvidence'], str) or not row['rightsEvidence'].strip() or not isinstance(row['listed'], bool):
             raise ValueError(f'missing approved metadata or redistribution evidence for {key(row)}')
         if not isinstance(row['packagePath'], str):
             raise ValueError('invalid package path')
@@ -156,6 +159,22 @@ def build(source_path, output, validator, previous_path=None, require_production
             raise ValueError('unsupported LUT encoding')
         entry = {k: row[k] for k in WIRE_FIELDS}
         entry['package'] = base64.b64encode(data).decode('ascii')
+        if 'collection' in row:
+            entry['collection'] = row['collection']
+        if 'sampleCredit' in row and 'samplePath' not in row:
+            raise ValueError(f'sampleCredit needs samplePath for {key(row)}')
+        if 'samplePath' in row:
+            if not isinstance(row['samplePath'], str):
+                raise ValueError('invalid sample path')
+            sample_path = (root / row['samplePath']).resolve()
+            if not sample_path.is_relative_to(root) or not sample_path.is_file() or sample_path.suffix.lower() not in ('.jpg', '.jpeg'):
+                raise ValueError(f'sample missing, outside source root or not .jpg: {row["samplePath"]}')
+            if sample_path.stat().st_size > SAMPLE_MAX_BYTES:
+                raise ValueError(f'sample exceeds 300 KB for {key(row)}')
+            jpeg = sample_path.read_bytes()
+            entry['sample'] = {'jpeg': base64.b64encode(jpeg).decode('ascii'), 'sha256': hashlib.sha256(jpeg).hexdigest()}
+            if 'sampleCredit' in row:
+                entry['sample']['credit'] = row['sampleCredit']
         if not row['listed']:
             archived.append(entry)
         if row['listed']:
@@ -167,7 +186,8 @@ def build(source_path, output, validator, previous_path=None, require_production
     rows.sort(key=lambda x: x['id'])
     if require_production and (source['catalogID'] != 'tinge' or not rows or any(x['id'] == 'original' or x['id'].startswith('personal-') for x in rows)):
         raise ValueError('first-party catalogue requires ID tinge and at least one non-reserved look')
-    manifest = {'formatVersion': 1, 'catalogID': source['catalogID'], 'title': source['title'], 'isDemo': False, 'looks': rows}
+    format_version = 2 if any('collection' in x or 'sample' in x for x in rows + archived) else 1
+    manifest = {'formatVersion': format_version, 'catalogID': source['catalogID'], 'title': source['title'], 'isDemo': False, 'looks': rows}
     encoded = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
     if len(encoded) > MAX_BYTES:
         raise ValueError('catalogue exceeds 8 MB')

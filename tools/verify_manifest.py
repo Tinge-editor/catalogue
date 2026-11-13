@@ -131,17 +131,69 @@ def check_preset(preset, depth=0):
             require(math.isfinite(value) and 0 <= value <= 1 and (i % 4 != 3 or value == 1), 'invalid LUT sample')
 
 
+SAMPLE_MAX_BYTES = 300_000
+JPEG_FRAMES = {0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF}
+LOOK_FIELDS = {'id', 'version', 'name', 'description', 'author', 'license', 'categories', 'sha256', 'package'}
+FORMAT_TWO_FIELDS = {'collection', 'sample'}
+
+
+def text(value, maximum):
+    return isinstance(value, str) and value.strip() != '' and len(value) <= maximum and not any(ord(c) < 32 and c != '\n' for c in value)
+
+
+def jpeg_size(data):
+    """(width, height) from a JPEG frame header, mirroring the app's parser; None for anything else."""
+    if len(data) <= 8 or data[:2] != b'\xff\xd8' or data[-2:] != b'\xff\xd9':
+        return None
+    i = 2
+    while i + 8 < len(data):
+        if data[i] != 0xFF:
+            return None
+        marker = data[i + 1]
+        if marker == 0xFF:
+            i += 1
+            continue
+        if marker == 0x01 or 0xD0 <= marker <= 0xD7:
+            i += 2
+            continue
+        length = data[i + 2] << 8 | data[i + 3]
+        if length < 2:
+            return None
+        if marker in JPEG_FRAMES:
+            height, width = data[i + 5] << 8 | data[i + 6], data[i + 7] << 8 | data[i + 8]
+            return (width, height) if width and height else None
+        if marker in (0xDA, 0xD9):
+            return None
+        i += 2 + length
+    return None
+
+
+def check_sample(sample):
+    require(isinstance(sample, dict) and {'jpeg', 'sha256'} <= set(sample) <= {'jpeg', 'sha256', 'credit'}, 'invalid sample fields')
+    jpeg = base64.b64decode(sample['jpeg'], validate=True)
+    require(len(jpeg) <= SAMPLE_MAX_BYTES and hashlib.sha256(jpeg).hexdigest() == sample['sha256'], 'sample checksum mismatch or too large')
+    size = jpeg_size(jpeg)
+    require(size is not None and 64 <= max(size) <= 1600 and min(size) >= 16, 'sample must be a JPEG with a 64–1600 px long edge')
+    if 'credit' in sample:
+        require(text(sample['credit'], 256), 'invalid sample credit')
+
+
 def main(path):
     data = Path(path).read_bytes()
     require(len(data) <= MAX_BYTES, 'manifest too large')
     root = json.loads(data, parse_constant=lambda x: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
-    require(isinstance(root, dict) and set(root) == {'formatVersion', 'catalogID', 'title', 'isDemo', 'looks'} and root['formatVersion'] == 1 and root['isDemo'] is False, 'invalid catalogue header')
+    require(isinstance(root, dict) and set(root) == {'formatVersion', 'catalogID', 'title', 'isDemo', 'looks'} and root['formatVersion'] in (1, 2) and type(root['formatVersion']) is int and root['isDemo'] is False, 'invalid catalogue header')
     require(isinstance(root['catalogID'], str) and ID.fullmatch(root['catalogID']) and len(root['catalogID']) <= 32, 'invalid catalogue ID')
     require(isinstance(root['title'], str) and root['title'].strip() and len(root['title']) <= 100, 'invalid catalogue title')
     require(isinstance(root['looks'], list) and len(root['looks']) <= 100, 'invalid look count')
     seen = set()
     for look in root['looks']:
-        require(isinstance(look, dict) and set(look) == {'id','version','name','description','author','license','categories','sha256','package'}, 'invalid look fields')
+        allowed = LOOK_FIELDS | (FORMAT_TWO_FIELDS if root['formatVersion'] == 2 else set())
+        require(isinstance(look, dict) and LOOK_FIELDS <= set(look) <= allowed, 'invalid look fields')
+        if 'collection' in look:
+            require(text(look['collection'], 64) and '\n' not in look['collection'], 'invalid collection')
+        if 'sample' in look:
+            check_sample(look['sample'])
         for name, maximum in [('id', 64), ('version', 24)]:
             require(isinstance(look[name], str) and ID.fullmatch(look[name]) and len(look[name]) <= maximum, 'invalid look identity')
         require(look['id'] not in seen, 'duplicate look ID')

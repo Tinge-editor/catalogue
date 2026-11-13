@@ -18,7 +18,7 @@ TINGE_SITE_OUTPUT=/tmp/tinge-site tools/validate.sh
 
 The build publishes the [preset licence and photo permission](https://tinge-editor.github.io/catalogue/preset-license.txt), the [privacy policy](https://tinge-editor.github.io/catalogue/privacy.html), and the [support page](https://tinge-editor.github.io/catalogue/support.html) from explicitly selected files in `public/`. Review the policy against the app release and current data practices before publishing.
 
-The generated `catalogue.json` uses Tinge's v1 manifest format and embeds each package. Approved packages are also available under `assets/<id>/<version>/<sha256>.json`. The current app uses the embedded bytes. `tools/verify_manifest.py` performs portable structural and integrity checks, including basic package versions and LUT structure. **It does not implement the full iOS preset validator and cannot alone prove compatibility.**
+The generated `catalogue.json` uses Tinge's v1 manifest format, or format 2 when a look sets the optional `collection` or `samplePath`/`sampleCredit` source fields (a JPEG of at most 300 KB, long edge 64–1600 px) and embeds each package. Approved packages are also available under `assets/<id>/<version>/<sha256>.json`. The current app uses the embedded bytes. `tools/verify_manifest.py` performs portable structural and integrity checks, including basic package versions and LUT structure. **It does not implement the full iOS preset validator and cannot alone prove compatibility.**
 
 Before approving a release, independently validate the generated manifest against a reviewed iOS app checkout on macOS with Xcode command-line tools:
 
