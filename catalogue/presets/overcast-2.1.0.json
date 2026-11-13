@@ -1,0 +1,97 @@
+[
+  {
+    "id": "overcast",
+    "name": "Overcast",
+    "description": "Lifted midtones and rich, slightly cool colour that brightens grey, cloudy days.",
+    "schemaVersion": 11,
+    "engineVersion": 11,
+    "adjustments": {
+      "exposure": 0,
+      "contrast": 1,
+      "saturation": 1,
+      "temperature": 0,
+      "tint": 0
+    },
+    "baseStrength": 1,
+    "advanced": {
+      "red": 1,
+      "green": 1,
+      "blue": 1,
+      "curve": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ],
+      "vibrance": 0.1,
+      "clarity": 0.1,
+      "filmShoulder": 0.2
+    },
+    "macros": [
+      {
+        "name": "Character",
+        "low": {
+          "saturation": 0.92,
+          "advanced.clarity": 0.0
+        },
+        "high": {
+          "saturation": 1.06,
+          "advanced.clarity": 0.2
+        }
+      },
+      {
+        "name": "Warmth",
+        "low": {
+          "advanced.warmth": -0.25
+        },
+        "high": {
+          "advanced.warmth": 0.25
+        }
+      }
+    ],
+    "base": [
+      {
+        "id": "overcast",
+        "name": "Overcast",
+        "description": "Lifted midtones and rich, slightly cool colour that brightens grey, cloudy days.",
+        "schemaVersion": 2,
+        "engineVersion": 2,
+        "adjustments": {
+          "exposure": 0.38,
+          "contrast": 1.0,
+          "saturation": 1.38,
+          "temperature": 350,
+          "tint": 1
+        },
+        "channelGains": [
+          1.04,
+          1.03,
+          0.99
+        ],
+        "toneCurve": [
+          [
+            0,
+            0.01
+          ],
+          [
+            0.25,
+            0.28
+          ],
+          [
+            0.5,
+            0.58
+          ],
+          [
+            0.75,
+            0.82
+          ],
+          [
+            1,
+            0.98
+          ]
+        ]
+      }
+    ]
+  }
+]

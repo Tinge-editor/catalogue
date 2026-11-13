@@ -1,0 +1,96 @@
+[
+  {
+    "id": "daylight",
+    "name": "Daylight",
+    "description": "Clear, neutral everyday colour: livelier saturation, brighter midtones and restrained highlights.",
+    "schemaVersion": 11,
+    "engineVersion": 11,
+    "adjustments": {
+      "exposure": 0,
+      "contrast": 1,
+      "saturation": 1,
+      "temperature": 0,
+      "tint": 0
+    },
+    "baseStrength": 1,
+    "advanced": {
+      "red": 1,
+      "green": 1,
+      "blue": 1,
+      "curve": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ],
+      "highlights": -0.16,
+      "whites": -0.12,
+      "vibrance": 0.08,
+      "clarity": 0.06,
+      "filmShoulder": 0.2
+    },
+    "macros": [
+      {
+        "name": "Character",
+        "low": {
+          "contrast": 0.976,
+          "saturation": 0.9,
+          "advanced.vibrance": 0.0
+        },
+        "high": {
+          "contrast": 1.036,
+          "saturation": 1.06,
+          "advanced.vibrance": 0.16
+        }
+      },
+      {
+        "name": "Warmth",
+        "low": {
+          "advanced.warmth": -0.2
+        },
+        "high": {
+          "advanced.warmth": 0.2
+        }
+      }
+    ],
+    "base": [
+      {
+        "id": "daylight",
+        "name": "Daylight",
+        "description": "Clear, neutral everyday colour: livelier saturation, brighter midtones and restrained highlights.",
+        "schemaVersion": 2,
+        "engineVersion": 2,
+        "adjustments": {
+          "exposure": 0.24,
+          "contrast": 1.0,
+          "saturation": 1.32,
+          "temperature": 0,
+          "tint": 0
+        },
+        "toneCurve": [
+          [
+            0,
+            0.005
+          ],
+          [
+            0.25,
+            0.29
+          ],
+          [
+            0.5,
+            0.56
+          ],
+          [
+            0.75,
+            0.8
+          ],
+          [
+            1,
+            0.99
+          ]
+        ]
+      }
+    ]
+  }
+]

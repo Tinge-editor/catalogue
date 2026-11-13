@@ -1,0 +1,91 @@
+[
+  {
+    "id": "fjord",
+    "name": "Fjord",
+    "description": "Cool, faded pastel colour: lifted blue-grey blacks, softened whites and quiet saturation.",
+    "schemaVersion": 11,
+    "engineVersion": 11,
+    "adjustments": {
+      "exposure": 0,
+      "contrast": 1,
+      "saturation": 1,
+      "temperature": 0,
+      "tint": 0
+    },
+    "baseStrength": 1,
+    "advanced": {
+      "red": 1,
+      "green": 1,
+      "blue": 1,
+      "curve": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1
+      ],
+      "filmToe": 0.25
+    },
+    "macros": [
+      {
+        "name": "Fade",
+        "low": {
+          "saturation": 1.1,
+          "advanced.blacks": -0.1
+        },
+        "high": {
+          "saturation": 0.9,
+          "advanced.blacks": 0.15
+        }
+      },
+      {
+        "name": "Warmth",
+        "low": {
+          "advanced.warmth": -0.3
+        },
+        "high": {
+          "advanced.warmth": 0.2
+        }
+      }
+    ],
+    "base": [
+      {
+        "id": "fjord",
+        "name": "Fjord",
+        "description": "Cool, faded pastel colour: lifted blue-grey blacks, softened whites and quiet saturation.",
+        "schemaVersion": 2,
+        "engineVersion": 2,
+        "adjustments": {
+          "exposure": 0.13,
+          "contrast": 1.0,
+          "saturation": 0.78,
+          "temperature": 500,
+          "tint": 0
+        },
+        "shadowTemperature": 1100,
+        "toneCurve": [
+          [
+            0,
+            0.035
+          ],
+          [
+            0.25,
+            0.31
+          ],
+          [
+            0.5,
+            0.55
+          ],
+          [
+            0.75,
+            0.78
+          ],
+          [
+            1,
+            0.95
+          ]
+        ]
+      }
+    ]
+  }
+]
