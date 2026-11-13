@@ -1,0 +1,12 @@
+Tinge built-in presets — licensing and attribution
+
+The original Tinge built-in presets are made available by their owner under the Creative Commons Attribution 4.0 International licence (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+The licence's legal terms are available at:
+https://creativecommons.org/licenses/by/4.0/legalcode
+
+When you share a preset, including a modified or forked preset, give appropriate credit to Tinge, link to the licence and indicate if you made changes, as required by CC BY 4.0. Do not imply that Tinge endorses you or your use of the preset. You may use, modify and redistribute the presets commercially, including for a fee, subject to the licence terms.
+
+Additional permission for photographs: The rights holder grants everyone unconditional, worldwide, royalty-free and irrevocable permission to use, reproduce, edit, distribute and otherwise share photographs processed with these presets, including for commercial purposes, without attribution to Tinge or the preset creator. This permission applies to the rights held in these presets; it does not grant rights in anyone else's photographs or other material.
+
+This notice covers the original Tinge built-in presets, including earlier versions; earlier catalogue metadata that states otherwise is superseded by this permission. It does not change the licence for third-party presets or for repository code and documentation. For another creator's work, check that creator's own licence and permissions.

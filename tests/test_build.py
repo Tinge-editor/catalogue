@@ -7,9 +7,10 @@ import tempfile
 import unittest
 import sys
 import struct
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
-from build import build
+from build import build, source_digest
 
 VALIDATOR = Path(os.environ['TINGE_VALIDATOR']).resolve()
 FIXTURE = Path(__file__).parent / 'fixtures' / 'preset.json'
@@ -54,6 +55,7 @@ class CatalogueTest(unittest.TestCase):
         self.assertNotIn('rightsEvidence', row)
         self.assertEqual((a / 'privacy.html').read_bytes(), (Path(__file__).resolve().parents[1] / 'public' / 'privacy.html').read_bytes())
         self.assertEqual((a / 'privacy.html').read_bytes(), (b / 'privacy.html').read_bytes())
+        self.assertEqual((a / 'preset-license.txt').read_bytes(), (Path(__file__).resolve().parents[1] / 'public' / 'preset-license.txt').read_bytes())
 
     def test_missing_metadata_duplicate_and_missing_file(self):
         del self.row['author']
@@ -147,6 +149,18 @@ class CatalogueTest(unittest.TestCase):
         self.assertEqual(len(list((removed / 'assets').rglob('*.json'))), 2)
         self.value['versions'].pop()
         with self.assertRaisesRegex(ValueError, 'changed or removed'): self.build(prev2)
+
+    def test_one_time_reset_is_limited_to_exact_source_pair(self):
+        prior = self.previous()
+        old = json.loads(prior.read_text())
+        self.row['version'] = '2'
+        updated = json.loads(json.dumps(self.value))
+        with patch('build.APPROVED_RESET', (source_digest(old), source_digest(updated))):
+            out = self.build(prior)
+            self.assertEqual(json.loads((out / 'catalogue.json').read_bytes())['looks'][0]['version'], '2')
+            self.row['description'] = 'Changed beyond the approved reset'
+            with self.assertRaisesRegex(ValueError, 'changed or removed'):
+                self.build(prior)
 
     def test_mutating_old_version_and_path_escape_are_rejected(self):
         old = self.previous()

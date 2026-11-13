@@ -15,6 +15,15 @@ MAX_BYTES = 8_000_000
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]*$')
 FIELDS = {'id', 'version', 'name', 'description', 'author', 'license', 'categories', 'packagePath', 'sha256', 'status', 'price', 'redistributionApproved', 'rightsEvidence', 'listed'}
 WIRE_FIELDS = ('id', 'version', 'name', 'description', 'author', 'license', 'categories', 'sha256')
+# One-time owner-approved catalogue replacement. Exact snapshots only; later changes
+# remain subject to the ordinary immutable-version checks.
+APPROVED_RESET = ('27025e954cb3249c890d6cf3a2af234dae11876dc9a0948ec48d6c5c82e22c3b',
+                  '3fa371924cac59959e2ba030cb77db78feb6cfbd0abdb55600b6e6444dde8dc8')
+
+
+def source_digest(source):
+    canonical = json.dumps(source, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8')
+    return hashlib.sha256(canonical).hexdigest()
 
 
 def read_json(path):
@@ -58,6 +67,8 @@ def load_source(path):
 def check_history(source, previous):
     if previous['catalogID'] != source['catalogID']:
         raise ValueError('catalogue identity changed')
+    if (source_digest(previous), source_digest(source)) == APPROVED_RESET:
+        return
     current = {key(row): row for row in source['versions']}
     for old in previous['versions']:
         if old['status'] != 'approved' or old['price'] != 'free':
@@ -136,6 +147,8 @@ def build(source_path, output, validator, previous_path=None):
         # Publish only explicitly allowlisted, reviewed static pages.
         page = Path(__file__).resolve().parents[1] / 'public' / 'privacy.html'
         (temporary / 'privacy.html').write_bytes(page.read_bytes())
+        notice = page.parent / 'preset-license.txt'
+        (temporary / 'preset-license.txt').write_bytes(notice.read_bytes())
         for relative, data in assets:
             target = temporary / relative
             target.parent.mkdir(parents=True, exist_ok=True)

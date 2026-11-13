@@ -16,7 +16,7 @@ The command runs tests and builds a site in a temporary directory. To retain out
 TINGE_SITE_OUTPUT=/tmp/tinge-site tools/validate.sh
 ```
 
-The build also publishes the standalone policy at `https://tinge-editor.github.io/catalogue/privacy.html` from `public/privacy.html`. Review the policy against the app release and current data practices before publishing.
+The build publishes the [preset licence and photo permission](https://tinge-editor.github.io/catalogue/preset-license.txt) from `public/preset-license.txt`. It also publishes the standalone policy at `https://tinge-editor.github.io/catalogue/privacy.html` from `public/privacy.html`. Review the policy against the app release and current data practices before publishing.
 
 The generated `catalogue.json` uses Tinge's v1 manifest format and embeds each package. Approved packages are also available under `assets/<id>/<version>/<sha256>.json`. The current app uses the embedded bytes. `tools/verify_manifest.py` performs portable structural and integrity checks, including basic package versions and LUT structure. **It does not implement the full iOS preset validator and cannot alone prove compatibility.**
 
@@ -32,7 +32,7 @@ This compiles validator files from the specified reviewed Git commit into a temp
 
 Keep authoring, review, private submissions and rights evidence outside this repository. Only after approval, add a native JSON array containing exactly one free, public preset under `catalogue/presets/` and add its metadata and SHA-256 to `catalogue/source.json`. Source metadata is public; do not include confidential permission records. All source entries must be approved and free. Record an accurate public rights statement without implying a broader licence than the owner granted. A checksum verifies bytes, not authorship or rights.
 
-Update the version when a recipe or its metadata changes; never overwrite or delete an already published version or package. Set an older version's `listed` to `false` and retain it when listing an update. The validator compares previous source records in pull requests and main pushes, but branch protections and human review are essential. To roll back, switch the `listed` flags in a new commit while retaining all historical packages. Do not redeploy an old checkout, which could remove later asset URLs. Legal takedowns require a separate deliberate process; public copies cannot be recalled.
+The owner authorised a one-time replacement of the initial catalogue when applying the preset licence; only the exact previous and replacement snapshots are permitted by that exception. Update the version when a recipe or its metadata changes; never overwrite or delete an already published version or package. Set an older version's `listed` to `false` and retain it when listing an update. The validator compares previous source records in pull requests and main pushes, but branch protections and human review are essential. To roll back, switch the `listed` flags in a new commit while retaining all historical packages. Do not redeploy an old checkout, which could remove later asset URLs. Legal takedowns require a separate deliberate process; public copies cannot be recalled.
 
 For LUT-based presets, source metadata must explicitly confirm sRGB input and output. Tinge can support other encodings, but this catalogue currently restricts publishing to confirmed sRGB. Do not assume a `.cube` identifies its colour encoding. The private iOS validator is required to verify full preset compatibility.
 

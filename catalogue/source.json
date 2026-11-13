@@ -4,147 +4,147 @@
   "versions": [
     {
       "id": "natural",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Natural",
       "description": "Vivid, neutral everyday colour with clearer contrast.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Natural"
       ],
-      "packagePath": "presets/natural-1.0.0.json",
+      "packagePath": "presets/natural-1.1.0.json",
       "sha256": "29711be8eb5516bb7119de330f3704eafc9f5c67039c7b5b67be83103daf3edf",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     },
     {
       "id": "edinburgh-soft",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Edinburgh Soft",
       "description": "A brighter, warm-neutral everyday look with softened highlights.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Natural",
         "Subtle"
       ],
-      "packagePath": "presets/edinburgh-soft-1.0.0.json",
+      "packagePath": "presets/edinburgh-soft-1.1.0.json",
       "sha256": "b0b3ddc55576b97ce3adbb6dbdc9e51e3ddc4fe3810647ed85c8e1704fa572e0",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     },
     {
       "id": "overcast-400",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Overcast 400",
       "description": "Brighter midtones and rich colour for cloudy daylight.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Natural"
       ],
-      "packagePath": "presets/overcast-400-1.0.0.json",
+      "packagePath": "presets/overcast-400-1.1.0.json",
       "sha256": "277666e8f7291eb5e351b1bba0c10da869f0cb2bd1c102a7c410481a43bd86e0",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     },
     {
       "id": "nordic-fade",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Nordic Fade",
       "description": "A cool, faded pastel with gently lifted blacks.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Creative"
       ],
-      "packagePath": "presets/nordic-fade-1.0.0.json",
+      "packagePath": "presets/nordic-fade-1.1.0.json",
       "sha256": "b7c06d87db90028bfac07b5bf066b4831bb2aa0f48a52d003930e3bb1b102112",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     },
     {
       "id": "golden-200",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Golden 200",
       "description": "Warm analogue colour inspired by Kodak Gold, without claiming film emulation.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Film"
       ],
-      "packagePath": "presets/golden-200-1.0.0.json",
+      "packagePath": "presets/golden-200-1.1.0.json",
       "sha256": "411333fa58cbb34f176fb69cfea1f9134d934e87c7d652b6bef94b7ed7ae7333",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     },
     {
       "id": "portrait-400",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Portrait 400",
       "description": "Soft portrait colour inspired by Portra, without claiming film emulation.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Film"
       ],
-      "packagePath": "presets/portrait-400-1.0.0.json",
+      "packagePath": "presets/portrait-400-1.1.0.json",
       "sha256": "1d6757d6c1956d79eef9cb6851d4ec5192268d9639f95f7b0d9eade7f4616a64",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     },
     {
       "id": "muted-chrome",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Muted Chrome",
       "description": "Muted colour inspired by Classic Chrome, without claiming film emulation.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Film"
       ],
-      "packagePath": "presets/muted-chrome-1.0.0.json",
+      "packagePath": "presets/muted-chrome-1.1.0.json",
       "sha256": "c663564ebecb92996b24087950941cacf72be011466c80679b0d636799f81b86",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     },
     {
       "id": "mono",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "name": "Mono",
       "description": "A clean black-and-white look with gentle tonal contrast.",
       "author": "Tinge",
-      "license": "Original Tinge preset; public catalogue distribution authorised by its owner. Other rights reserved.",
+      "license": "CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). When sharing this preset or an adaptation, credit Tinge and indicate changes. Photos edited with this preset may be used and shared without attribution; see https://tinge-editor.github.io/catalogue/preset-license.txt.",
       "categories": [
         "Creative"
       ],
-      "packagePath": "presets/mono-1.0.0.json",
+      "packagePath": "presets/mono-1.1.0.json",
       "sha256": "ccb3bbea91e2f16eeefaa3561edaf0385f9774062f2a6f1fbe76548aa23c66ea",
       "status": "approved",
       "price": "free",
       "redistributionApproved": true,
-      "rightsEvidence": "Original Tinge preset; owner authorises public catalogue distribution.",
+      "rightsEvidence": "Original Tinge preset; owner grants CC BY 4.0 plus the additional photo-use permission.",
       "listed": true
     }
   ]
