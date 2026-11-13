@@ -57,6 +57,10 @@ ADVANCED_FIELDS = {
     'monochrome': (11, lambda v: isinstance(v, list) and len(v) == 8 and all(number(x, -1, 1) for x in v)),
     'warmth': (11, lambda v: number(v, -1, 1)),
     'tint': (11, lambda v: number(v, -1, 1)),
+    'halation': (11, lambda v: number(v, 0, 1)),
+    'halationThreshold': (11, lambda v: number(v, 0, 1)),
+    'bloom': (11, lambda v: number(v, 0, 1)),
+    'bloomThreshold': (11, lambda v: number(v, 0, 1)),
 }
 
 
