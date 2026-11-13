@@ -18,7 +18,7 @@ TINGE_SITE_OUTPUT=/tmp/tinge-site tools/validate.sh
 
 The build publishes the [preset licence and photo permission](https://tinge-editor.github.io/catalogue/preset-license.txt), the [privacy policy](https://tinge-editor.github.io/catalogue/privacy.html), and the [support page](https://tinge-editor.github.io/catalogue/support.html) from explicitly selected files in `public/`. Review the policy against the app release and current data practices before publishing.
 
-The generated `catalogue.json` uses Tinge's v1 manifest format, or format 2 when a look sets the optional `collection` or `samplePath`/`sampleCredit` source fields (a JPEG of at most 300 KB, long edge 64–1600 px) and embeds each package. Approved packages are also available under `assets/<id>/<version>/<sha256>.json`. The current app uses the embedded bytes. `tools/verify_manifest.py` performs portable structural and integrity checks, including basic package versions and LUT structure. **It does not implement the full iOS preset validator and cannot alone prove compatibility.**
+The generated `catalogue.json` uses Tinge's v1 manifest format, or format 2 when a look sets the optional `collection` or `samplePath`/`sampleCredit` source fields (a JPEG of at most 300 KB, long edge 64–1600 px) and embeds each package. Approved packages are also available under `assets/<id>/<version>/<sha256>.json`. The current app uses the embedded bytes. `tools/verify_manifest.py` performs portable structural and integrity checks. These cover package engine versions 1–11, the engine-11 `advanced` fields (vibrance, vignette, B&W mixer, calibrated white balance, halation and bloom, colour grain, point curves, clarity, calibration, film response), look dials (`macros` and `macroValues`) and LUT structure. **It does not implement the full iOS preset validator and cannot alone prove compatibility.**
 
 Before approving a release, independently validate the generated manifest against a reviewed iOS app checkout on macOS with Xcode command-line tools:
 
@@ -27,6 +27,14 @@ tools/verify_with_ios.sh /path/to/tinge-ios REVIEWED_IOS_COMMIT /tmp/tinge-site/
 ```
 
 This compiles validator files from the specified reviewed Git commit into a temporary directory, without modifying the app checkout or publishing its source. Use a stable app commit and update it when coordinating an iOS contract change. Public CI cannot access the private app source and therefore runs only the portable checks. Use a required human review and protect the deployment environment until independent iOS validation has passed.
+
+## Look dials and engine versions
+
+Packages may use any engine the current app reads (1–11). Engine 11 adds the newer `advanced` fields and look dials: up to two named `macros` (`{name, low, high}`), each moving a fixed allow-list of fields between its `low` and `high` values. The app shows them under Strength. A catalogue that lists an engine-11 look, or that is format 2, is rejected as a whole by app builds that predate those features. So raise the format or engine only when the matching app is the one people run, and say so in the pull request. Changing a published look's recipe, including adding dials, needs a new version (see below).
+
+## Experimental research listing
+
+`experimental/research-presets/catalogue.json` is a separate, experimental manifest with its own catalogue identity (`tinge-research`), described in its README. The build checks it, copies it to `research-catalogue.json` in the site output and runs the validator on it. It never changes `catalogue/source.json` or the production `catalogue.json`. Its look IDs can't reuse any production ID, listed or retired.
 
 ## Publish an approved look
 
