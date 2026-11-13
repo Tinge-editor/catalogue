@@ -61,6 +61,7 @@ ADVANCED_FIELDS = {
     'halationThreshold': (11, lambda v: number(v, 0, 1)),
     'bloom': (11, lambda v: number(v, 0, 1)),
     'bloomThreshold': (11, lambda v: number(v, 0, 1)),
+    'grainColor': (11, lambda v: number(v, 0, 1)),
 }
 
 
