@@ -51,6 +51,10 @@ ADVANCED_FIELDS = {
     'grainSize': (8, lambda v: number(v, 0, 1)),
     'grainRoughness': (8, lambda v: number(v, 0, 1)),
     'colorGrading': (8, grading),
+    'vibrance': (11, lambda v: number(v, -1, 1)),
+    'vignette': (11, lambda v: number(v, -1, 1)),
+    'vignetteMidpoint': (11, lambda v: number(v, 0, 1)),
+    'monochrome': (11, lambda v: isinstance(v, list) and len(v) == 8 and all(number(x, -1, 1) for x in v)),
 }
 
 
