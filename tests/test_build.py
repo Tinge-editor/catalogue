@@ -306,6 +306,88 @@ class CatalogueTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'invalid advanced field'):
                 verify_manifest(self.manifest_with(look(11, clarity=value)))
 
+    def test_verify_manifest_checks_calibration(self):
+        def look(engine, **fields):
+            def mutate(p):
+                p['schemaVersion'] = p['engineVersion'] = engine
+                p['baseStrength'] = 1
+                p['advanced'] = {'red': 1, 'green': 1, 'blue': 1, 'curve': [0, 0.25, 0.5, 0.75, 1], **fields}
+            return mutate
+        neutral = {'hue': 0, 'saturation': 0}
+        primaries = [{'hue': 0.2, 'saturation': 0}, neutral, {'hue': -0.35, 'saturation': 0.4}]
+        verify_manifest(self.manifest_with(look(11, calibration=primaries)))
+        with self.assertRaisesRegex(ValueError, 'needs engine 11'):
+            verify_manifest(self.manifest_with(look(10, calibration=primaries)))
+        for value in ([neutral, neutral], [neutral, neutral, {'hue': 1.2, 'saturation': 0}],
+                      [neutral, neutral, {'hue': 0}], [neutral, neutral, {'hue': 0, 'saturation': 0, 'luminance': 0}], [0, 0, 0]):
+            with self.assertRaisesRegex(ValueError, 'invalid advanced field'):
+                verify_manifest(self.manifest_with(look(11, calibration=value)))
+
+    def test_verify_manifest_checks_film_response(self):
+        def look(engine, **fields):
+            def mutate(p):
+                p['schemaVersion'] = p['engineVersion'] = engine
+                p['baseStrength'] = 1
+                p['advanced'] = {'red': 1, 'green': 1, 'blue': 1, 'curve': [0, 0.25, 0.5, 0.75, 1], **fields}
+            return mutate
+        verify_manifest(self.manifest_with(look(11, filmToe=0.3, filmShoulder=1)))
+        for field in ('filmToe', 'filmShoulder'):
+            with self.assertRaisesRegex(ValueError, 'needs engine 11'):
+                verify_manifest(self.manifest_with(look(10, **{field: 0.5})))
+            for value in (-0.1, 1.1, '0.5'):
+                with self.assertRaisesRegex(ValueError, 'invalid advanced field'):
+                    verify_manifest(self.manifest_with(look(11, **{field: value})))
+
+    def test_format_two_collections_and_samples(self):
+        sample = Path(__file__).parent / 'fixtures' / 'sample.jpg'
+        (self.root / 'sample.jpg').write_bytes(sample.read_bytes())
+        plain = json.loads((self.build() / 'catalogue.json').read_text())
+        self.assertEqual(plain['formatVersion'], 1)
+        self.row.update(collection='Portrait negatives', samplePath='sample.jpg', sampleCredit='Sample photo: Tinge')
+        output = self.build()
+        manifest = json.loads((output / 'catalogue.json').read_text())
+        self.assertEqual(manifest['formatVersion'], 2)
+        look = manifest['looks'][0]
+        self.assertEqual(look['collection'], 'Portrait negatives')
+        self.assertEqual(base64.b64decode(look['sample']['jpeg']), sample.read_bytes())
+        self.assertEqual(look['sample']['sha256'], hashlib.sha256(sample.read_bytes()).hexdigest())
+        self.assertEqual(look['sample']['credit'], 'Sample photo: Tinge')
+        verify_manifest(str(output / 'catalogue.json'))
+
+        def check(change, message):
+            changed = json.loads(json.dumps(manifest))
+            change(changed, changed['looks'][0])
+            path = self.root / f'v2-{self.counter}-{message[:8]}.json'
+            self.counter += 1
+            path.write_text(json.dumps(changed))
+            with self.assertRaisesRegex(ValueError, message):
+                verify_manifest(str(path))
+        check(lambda m, l: m.update(formatVersion=1), 'invalid look fields')
+        check(lambda m, l: m.update(formatVersion=3), 'invalid catalogue header')
+        check(lambda m, l: l.update(inspiredBy='x'), 'invalid look fields')
+        check(lambda m, l: l.update(collection='a' * 65), 'invalid collection')
+        check(lambda m, l: l.update(collection='two\nlines'), 'invalid collection')
+        check(lambda m, l: l['sample'].update(sha256='0' * 64), 'sample checksum')
+        check(lambda m, l: l['sample'].update(caption='x'), 'invalid sample fields')
+        check(lambda m, l: l['sample'].pop('sha256'), 'invalid sample fields')
+        check(lambda m, l: l['sample'].update(credit=' '), 'invalid sample credit')
+        png = b'\x89PNG\r\n\x1a\n' + b'0' * 64
+        check(lambda m, l: l['sample'].update(jpeg=base64.b64encode(png).decode(), sha256=hashlib.sha256(png).hexdigest()), 'must be a JPEG')
+
+        for row_change, message in (({'samplePath': None, 'sampleCredit': 'x'}, 'sampleCredit needs samplePath'),
+                                    ({'samplePath': '../sample.jpg'}, 'sample missing'),
+                                    ({'samplePath': 'look.json'}, 'not .jpg')):
+            row = {**self.row, **row_change}
+            if row.get('samplePath') is None:
+                row.pop('samplePath')
+            self.value['versions'] = [row]
+            with self.assertRaisesRegex(ValueError, message):
+                self.build()
+        (self.root / 'big.jpg').write_bytes(b'0' * 300_001)
+        self.value['versions'] = [{**self.row, 'samplePath': 'big.jpg'}]
+        with self.assertRaisesRegex(ValueError, 'exceeds 300 KB'):
+            self.build()
+
     def test_first_party_release_rejects_empty_or_reserved_listings(self):
         for mutation in ('empty', 'reserved', 'wrong_catalogue'):
             original = json.loads(json.dumps(self.value))
