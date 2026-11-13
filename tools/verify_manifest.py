@@ -72,6 +72,8 @@ ADVANCED_FIELDS = {
     'curvePoints': (11, point_curve),
     'channelCurvePoints': (11, lambda v: isinstance(v, list) and len(v) == 3 and all(point_curve(c) for c in v)),
     'clarity': (11, lambda v: number(v, -1, 1)),
+    'calibration': (11, lambda v: isinstance(v, list) and len(v) == 3 and all(
+        isinstance(p, dict) and set(p) == {'hue', 'saturation'} and number(p['hue'], -1, 1) and number(p['saturation'], -1, 1) for p in v)),
 }
 
 
