@@ -306,6 +306,42 @@ class CatalogueTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'invalid advanced field'):
                 verify_manifest(self.manifest_with(look(11, clarity=value)))
 
+    def test_verify_manifest_checks_look_dials(self):
+        character = {'name': 'Character', 'low': {'contrast': 0.85, 'advanced.clarity': -0.3}, 'high': {'contrast': 1.3, 'advanced.clarity': 0.6}}
+        warmth = {'name': 'Warmth', 'low': {'advanced.warmth': -0.5}, 'high': {'advanced.warmth': 0.5}}
+        def look(engine, macros, values=None):
+            def mutate(p):
+                p['schemaVersion'] = p['engineVersion'] = engine
+                p['baseStrength'] = 1
+                p['macros'] = macros
+                if values is not None:
+                    p['macroValues'] = values
+            return mutate
+        verify_manifest(self.manifest_with(look(11, [character, warmth])))
+        verify_manifest(self.manifest_with(look(11, [character], [-1])))
+        with self.assertRaisesRegex(ValueError, 'need engine 11'):
+            verify_manifest(self.manifest_with(look(10, [character])))
+        bad = [
+            ([], 'invalid look dials'), ([character, warmth, {**warmth, 'name': 'Third'}], 'invalid look dials'),
+            ([character, {**character}], 'duplicate look dial name'), ([{**character, 'name': ' '}], 'invalid look dial name'),
+            ([{**character, 'name': 'x' * 25}], 'invalid look dial name'), ([{**character, 'labels': []}], 'invalid look dial fields'),
+            ([{'name': 'X', 'low': {'exposure': -1}, 'high': {'contrast': 1}}], 'invalid look dial endpoints'),
+            ([{'name': 'X', 'low': {'grain': 0}, 'high': {'grain': 1}}], 'unsupported look dial field grain'),
+            ([{'name': 'X', 'low': {'exposure': -3}, 'high': {'exposure': 1}}], 'invalid look dial value for exposure'),
+            ([{'name': 'X', 'low': {'advanced.bloom': -0.1}, 'high': {'advanced.bloom': 1}}], 'invalid look dial value'),
+        ]
+        for macros, message in bad:
+            with self.assertRaisesRegex(ValueError, message):
+                verify_manifest(self.manifest_with(look(11, macros)))
+        for values in ([1.5], [0, 0], ['0']):
+            with self.assertRaisesRegex(ValueError, 'invalid macroValues'):
+                verify_manifest(self.manifest_with(look(11, [character], values)))
+        def values_only(p):
+            p['schemaVersion'] = p['engineVersion'] = 11
+            p['macroValues'] = [0]
+        with self.assertRaisesRegex(ValueError, 'macroValues needs macros'):
+            verify_manifest(self.manifest_with(values_only))
+
     def test_verify_manifest_checks_calibration(self):
         def look(engine, **fields):
             def mutate(p):

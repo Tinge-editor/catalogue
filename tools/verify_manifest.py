@@ -79,6 +79,38 @@ ADVANCED_FIELDS = {
 }
 
 
+# Look dials (engine 11): fields a dial may move, with their valid range; mirrors MacroDial.fields in the app.
+MACRO_FIELDS = {
+    'exposure': (-2, 2), 'contrast': (0.5, 1.5), 'saturation': (0, 2), 'temperature': (-1500, 1500), 'tint': (-100, 100),
+    **{f'advanced.{k}': (0.5, 1.5) for k in ('red', 'green', 'blue')},
+    **{f'advanced.{k}': (-1, 1) for k in ('highlights', 'shadows', 'whites', 'blacks', 'vibrance', 'clarity', 'warmth', 'tint', 'vignette')},
+    **{f'advanced.{k}': (0, 1) for k in ('halation', 'bloom', 'filmToe', 'filmShoulder')},
+}
+
+
+def check_macros(preset, engine):
+    macros, values = preset.get('macros'), preset.get('macroValues')
+    if macros is None:
+        require(values is None, 'macroValues needs macros')
+        return
+    require(engine >= 11, 'look dials need engine 11')
+    require(isinstance(macros, list) and 1 <= len(macros) <= 2, 'invalid look dials')
+    names = set()
+    for dial in macros:
+        require(isinstance(dial, dict) and set(dial) == {'name', 'low', 'high'}, 'invalid look dial fields')
+        name = dial['name']
+        require(isinstance(name, str) and name.strip() and len(name) <= 24 and '\n' not in name and '\r' not in name, 'invalid look dial name')
+        require(name.lower() not in names, 'duplicate look dial name')
+        names.add(name.lower())
+        low, high = dial['low'], dial['high']
+        require(isinstance(low, dict) and isinstance(high, dict) and low and set(low) == set(high) and len(low) <= 12, 'invalid look dial endpoints')
+        for field in low:
+            require(field in MACRO_FIELDS, f'unsupported look dial field {field}')
+            require(number(low[field], *MACRO_FIELDS[field]) and number(high[field], *MACRO_FIELDS[field]), f'invalid look dial value for {field}')
+    if values is not None:
+        require(isinstance(values, list) and len(values) == len(macros) and all(number(v, -1, 1) for v in values), 'invalid macroValues')
+
+
 def check_advanced(advanced, engine):
     require(engine >= 5 and isinstance(advanced, dict), 'invalid advanced adjustments')
     require({'red', 'green', 'blue', 'curve'} <= set(advanced), 'advanced adjustments need red, green, blue and curve')
@@ -116,6 +148,7 @@ def check_preset(preset, depth=0):
         require(type(v) in (int, float) and math.isfinite(v) and low <= v <= high, 'invalid adjustment range')
     if preset.get('advanced') is not None:
         check_advanced(preset['advanced'], engine)
+    check_macros(preset, engine)
     if preset.get('base') is not None:
         require(isinstance(preset['base'], list) and len(preset['base']) <= 1, 'invalid base')
         for child in preset['base']:
