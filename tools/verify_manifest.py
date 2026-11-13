@@ -12,6 +12,58 @@ import sys
 MAX_BYTES = 8_000_000
 ID = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]*$')
 CATEGORIES = {'Subtle', 'Natural', 'Film', 'Creative'}
+# Highest engine the current Tinge app renders; keep in step with Preset.supportedEngineVersions.
+MAX_ENGINE = 11
+
+
+def number(value, low, high):
+    return type(value) in (int, float) and math.isfinite(value) and low <= value <= high
+
+
+def curve(points):
+    return (isinstance(points, list) and len(points) == 5 and all(number(v, 0, 1) for v in points)
+            and all(a <= b for a, b in zip(points, points[1:])))
+
+
+def tones(entries, count):
+    return (isinstance(entries, list) and len(entries) == count and all(
+        isinstance(e, dict) and set(e) == {'hue', 'saturation', 'luminance'} for e in entries))
+
+
+def grading(value):
+    return (isinstance(value, dict) and set(value) == {'tones', 'blending', 'balance'} and tones(value['tones'], 4)
+            and all(number(t['hue'], 0, 1) and number(t['saturation'], 0, 1) and number(t['luminance'], -1, 1) for t in value['tones'])
+            and number(value['blending'], 0, 1) and number(value['balance'], -1, 1))
+
+
+# Field -> (first engine version that has it, check). Each new engine-11 dial adds its entry here.
+ADVANCED_FIELDS = {
+    'red': (5, lambda v: number(v, 0.5, 1.5)),
+    'green': (5, lambda v: number(v, 0.5, 1.5)),
+    'blue': (5, lambda v: number(v, 0.5, 1.5)),
+    'curve': (5, curve),
+    'highlights': (6, lambda v: number(v, -1, 1)),
+    'shadows': (6, lambda v: number(v, -1, 1)),
+    'colorMix': (6, lambda v: tones(v, 8) and all(all(number(e[k], -1, 1) for k in e) for e in v)),
+    'channelCurves': (6, lambda v: isinstance(v, list) and len(v) == 3 and all(curve(c) for c in v)),
+    'whites': (7, lambda v: number(v, -1, 1)),
+    'blacks': (7, lambda v: number(v, -1, 1)),
+    'grainSize': (8, lambda v: number(v, 0, 1)),
+    'grainRoughness': (8, lambda v: number(v, 0, 1)),
+    'colorGrading': (8, grading),
+}
+
+
+def check_advanced(advanced, engine):
+    require(engine >= 5 and isinstance(advanced, dict), 'invalid advanced adjustments')
+    require({'red', 'green', 'blue', 'curve'} <= set(advanced), 'advanced adjustments need red, green, blue and curve')
+    for field, value in advanced.items():
+        require(field in ADVANCED_FIELDS, f'unsupported advanced field {field}')
+        first, check = ADVANCED_FIELDS[field]
+        if value is None:
+            continue
+        require(engine >= first, f'advanced field {field} needs engine {first}')
+        require(check(value), f'invalid advanced field {field}')
 
 
 def require(condition, message):
@@ -22,7 +74,7 @@ def require(condition, message):
 def check_preset(preset, depth=0):
     require(isinstance(preset, dict) and depth <= 31, 'invalid preset nesting')
     schema, engine = preset.get('schemaVersion'), preset.get('engineVersion')
-    require(type(schema) is int and type(engine) is int and schema == engine and 1 <= schema <= 10, 'unsupported schema or engine')
+    require(type(schema) is int and type(engine) is int and schema == engine and 1 <= schema <= MAX_ENGINE, 'unsupported schema or engine')
     for name in ('id', 'name'):
         require(isinstance(preset.get(name), str) and 0 < len(preset[name]) <= 128, 'invalid preset identity')
     require(isinstance(preset.get('description'), str) and len(preset['description']) <= 4096, 'invalid description')
@@ -32,6 +84,8 @@ def check_preset(preset, depth=0):
     for field, (low, high) in bounds.items():
         v = adj[field]
         require(type(v) in (int, float) and math.isfinite(v) and low <= v <= high, 'invalid adjustment range')
+    if preset.get('advanced') is not None:
+        check_advanced(preset['advanced'], engine)
     if preset.get('base') is not None:
         require(isinstance(preset['base'], list) and len(preset['base']) <= 1, 'invalid base')
         for child in preset['base']:
