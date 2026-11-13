@@ -291,6 +291,21 @@ class CatalogueTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'replaces channelCurves'):
             verify_manifest(self.manifest_with(look(11, channelCurvePoints=[toe, toe, toe], channelCurves=[[0, 0.25, 0.5, 0.75, 1]] * 3)))
 
+    def test_verify_manifest_checks_clarity(self):
+        def look(engine, **fields):
+            def mutate(p):
+                p['schemaVersion'] = p['engineVersion'] = engine
+                p['baseStrength'] = 1
+                p['advanced'] = {'red': 1, 'green': 1, 'blue': 1, 'curve': [0, 0.25, 0.5, 0.75, 1], **fields}
+            return mutate
+        verify_manifest(self.manifest_with(look(11, clarity=0.3)))
+        verify_manifest(self.manifest_with(look(11, clarity=-1)))
+        with self.assertRaisesRegex(ValueError, 'needs engine 11'):
+            verify_manifest(self.manifest_with(look(10, clarity=0.3)))
+        for value in (1.01, -1.5, 'high', True):
+            with self.assertRaisesRegex(ValueError, 'invalid advanced field'):
+                verify_manifest(self.manifest_with(look(11, clarity=value)))
+
     def test_first_party_release_rejects_empty_or_reserved_listings(self):
         for mutation in ('empty', 'reserved', 'wrong_catalogue'):
             original = json.loads(json.dumps(self.value))
