@@ -71,6 +71,7 @@ ADVANCED_FIELDS = {
     'grainColor': (11, lambda v: number(v, 0, 1)),
     'curvePoints': (11, point_curve),
     'channelCurvePoints': (11, lambda v: isinstance(v, list) and len(v) == 3 and all(point_curve(c) for c in v)),
+    'clarity': (11, lambda v: number(v, -1, 1)),
 }
 
 
