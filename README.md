@@ -16,7 +16,7 @@ The command runs tests and builds a site in a temporary directory. To retain out
 TINGE_SITE_OUTPUT=/tmp/tinge-site tools/validate.sh
 ```
 
-The build publishes the [preset licence and photo permission](https://tinge-editor.github.io/catalogue/preset-license.txt) from `public/preset-license.txt`. It also publishes the standalone policy at `https://tinge-editor.github.io/catalogue/privacy.html` from `public/privacy.html`. Review the policy against the app release and current data practices before publishing.
+The build publishes the [preset licence and photo permission](https://tinge-editor.github.io/catalogue/preset-license.txt), the [privacy policy](https://tinge-editor.github.io/catalogue/privacy.html), and the [support page](https://tinge-editor.github.io/catalogue/support.html) from explicitly selected files in `public/`. Review the policy against the app release and current data practices before publishing.
 
 The generated `catalogue.json` uses Tinge's v1 manifest format and embeds each package. Approved packages are also available under `assets/<id>/<version>/<sha256>.json`. The current app uses the embedded bytes. `tools/verify_manifest.py` performs portable structural and integrity checks, including basic package versions and LUT structure. **It does not implement the full iOS preset validator and cannot alone prove compatibility.**
 
@@ -40,6 +40,6 @@ For LUT-based presets, source metadata must explicitly confirm sRGB input and ou
 
 The workflow runs on pull requests and on pushes to `main`; it deploys only when the repository variable `PAGES_PUBLICATION_ENABLED` is `true`. Configure Settings → Pages → GitHub Actions and protect the `github-pages` environment, require the CI check and review of every release, and disallow force pushes after initial setup. The workflow publishes the generated site, not the repository tree.
 
-The intended stable manifest URL is `https://tinge-editor.github.io/catalogue/catalogue.json`; verify that it is publicly accessible before configuring the app. Its path remains stable across catalogue changes when Pages hosts this repository at the expected project-site path. The mutable manifest must not be treated as permanently cached. GitHub Pages controls response headers; check actual behaviour rather than assuming custom cache settings. Versioned package URLs contain a content hash and must never be reused for different bytes.
+The production manifest URL is `https://tinge-editor.github.io/catalogue/catalogue.json`; verify public access after each release. Its path remains stable across catalogue changes when Pages hosts this repository at the expected project-site path. The mutable manifest must not be treated as permanently cached. GitHub Pages controls response headers; check actual behaviour rather than assuming custom cache settings. Versioned package URLs contain a content hash and must never be reused for different bytes.
 
 Distribution rights are described in [NOTICE.md](NOTICE.md).

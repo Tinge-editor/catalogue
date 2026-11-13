@@ -78,7 +78,7 @@ def check_history(source, previous):
             raise ValueError(f'published version {key(old)} changed or removed; retain it and create a new version')
 
 
-def build(source_path, output, validator, previous_path=None):
+def build(source_path, output, validator, previous_path=None, require_production=False):
     source_path = source_path.resolve()
     root = source_path.parent
     source = load_source(source_path)
@@ -136,6 +136,8 @@ def build(source_path, output, validator, previous_path=None):
             rows.append(entry)
         assets.append((f'assets/{row["id"]}/{row["version"]}/{digest}.json', data))
     rows.sort(key=lambda x: x['id'])
+    if require_production and (source['catalogID'] != 'tinge' or not rows or any(x['id'] == 'original' or x['id'].startswith('personal-') for x in rows)):
+        raise ValueError('first-party catalogue requires ID tinge and at least one non-reserved look')
     manifest = {'formatVersion': 1, 'catalogID': source['catalogID'], 'title': source['title'], 'isDemo': False, 'looks': rows}
     encoded = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
     if len(encoded) > MAX_BYTES:
@@ -149,6 +151,7 @@ def build(source_path, output, validator, previous_path=None):
         (temporary / 'privacy.html').write_bytes(page.read_bytes())
         notice = page.parent / 'preset-license.txt'
         (temporary / 'preset-license.txt').write_bytes(notice.read_bytes())
+        (temporary / 'support.html').write_bytes((page.parent / 'support.html').read_bytes())
         for relative, data in assets:
             target = temporary / relative
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -174,7 +177,7 @@ def main():
     parser.add_argument('--previous', type=Path)
     args = parser.parse_args()
     try:
-        build(args.source, args.output, args.validator.resolve(), args.previous)
+        build(args.source, args.output, args.validator.resolve(), args.previous, require_production=True)
     except (ValueError, KeyError, TypeError, OSError, subprocess.CalledProcessError) as error:
         parser.exit(1, f'Catalogue build failed: {error}\n')
     print(f'Built {args.output}')

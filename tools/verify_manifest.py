@@ -51,7 +51,7 @@ def main(path):
     data = Path(path).read_bytes()
     require(len(data) <= MAX_BYTES, 'manifest too large')
     root = json.loads(data, parse_constant=lambda x: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
-    require(isinstance(root, dict) and set(root) == {'formatVersion', 'catalogID', 'title', 'isDemo', 'looks'} and root['formatVersion'] == 1 and type(root['isDemo']) is bool, 'invalid catalogue header')
+    require(isinstance(root, dict) and set(root) == {'formatVersion', 'catalogID', 'title', 'isDemo', 'looks'} and root['formatVersion'] == 1 and root['isDemo'] is False, 'invalid catalogue header')
     require(isinstance(root['catalogID'], str) and ID.fullmatch(root['catalogID']) and len(root['catalogID']) <= 32, 'invalid catalogue ID')
     require(isinstance(root['title'], str) and root['title'].strip() and len(root['title']) <= 100, 'invalid catalogue title')
     require(isinstance(root['looks'], list) and len(root['looks']) <= 100, 'invalid look count')

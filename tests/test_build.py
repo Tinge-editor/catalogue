@@ -11,6 +11,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
 from build import build, source_digest
+from verify_manifest import main as verify_manifest
 
 VALIDATOR = Path(os.environ['TINGE_VALIDATOR']).resolve()
 FIXTURE = Path(__file__).parent / 'fixtures' / 'preset.json'
@@ -56,6 +57,7 @@ class CatalogueTest(unittest.TestCase):
         self.assertEqual((a / 'privacy.html').read_bytes(), (Path(__file__).resolve().parents[1] / 'public' / 'privacy.html').read_bytes())
         self.assertEqual((a / 'privacy.html').read_bytes(), (b / 'privacy.html').read_bytes())
         self.assertEqual((a / 'preset-license.txt').read_bytes(), (Path(__file__).resolve().parents[1] / 'public' / 'preset-license.txt').read_bytes())
+        self.assertEqual((a / 'support.html').read_bytes(), (Path(__file__).resolve().parents[1] / 'public' / 'support.html').read_bytes())
 
     def test_missing_metadata_duplicate_and_missing_file(self):
         del self.row['author']
@@ -161,6 +163,27 @@ class CatalogueTest(unittest.TestCase):
             self.row['description'] = 'Changed beyond the approved reset'
             with self.assertRaisesRegex(ValueError, 'changed or removed'):
                 self.build(prior)
+
+    def test_nonproduction_manifest_is_rejected(self):
+        out = self.build()
+        manifest = json.loads((out / 'catalogue.json').read_text())
+        manifest['isDemo'] = True
+        path = self.root / 'nonproduction.json'
+        path.write_text(json.dumps(manifest))
+        with self.assertRaisesRegex(ValueError, 'invalid catalogue header'):
+            verify_manifest(path)
+
+    def test_first_party_release_rejects_empty_or_reserved_listings(self):
+        for mutation in ('empty', 'reserved', 'wrong_catalogue'):
+            original = json.loads(json.dumps(self.value))
+            if mutation == 'empty': self.value['versions'] = []
+            elif mutation == 'reserved': self.row['id'] = 'original'
+            else: self.value['catalogID'] = 'other'
+            self.write()
+            with self.assertRaisesRegex(ValueError, 'first-party catalogue'):
+                build(self.source, self.root / ('production-' + mutation), VALIDATOR, require_production=True)
+            self.value = original
+            self.row = self.value['versions'][0]
 
     def test_mutating_old_version_and_path_escape_are_rejected(self):
         old = self.previous()
