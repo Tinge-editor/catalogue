@@ -1,6 +1,6 @@
 # Experimental research looks
 
-`catalogue.json` is an **experimental** format-2 manifest of 16 engine-11 looks (version 0.2.1) for evaluation in Tinge (Manage Looks → Discover Looks → ⋯ → Connect Catalogue URL). The looks use look dials (`macros`) instead of separate Soft/Bold/Warm/Cool listings, and are grouped into collections: Portrait film, Everyday film, Slide and landscape, Cinema, Black and white, and Faded and instant. They need a Tinge build that reads engine 11 and catalogue format 2.
+`catalogue.json` is an **experimental** format-2 manifest of 17 engine-11 looks for evaluation in Tinge (Manage Looks → Discover Looks → ⋯ → Connect Catalogue URL). The looks use look dials (`macros`) instead of separate Soft/Bold/Warm/Cool listings, and are grouped into collections: Portrait film, Everyday film, Slide and landscape, Cinema, Black and white, and Faded and instant. They need a Tinge build that reads engine 11 and catalogue format 2. Listing 0.3.0 adds one look, Peony (version 0.3.0), to the Portrait film collection; the other 16 looks are unchanged at version 0.2.1.
 
 It uses its own catalogue ID, `tinge-research`, and is separate from the production listing: it doesn't change `catalogue/source.json` or the production `catalogue.json`, and its look IDs don't collide with production IDs.
 
